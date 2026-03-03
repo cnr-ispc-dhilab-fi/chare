@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sense of Care Projects</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      /* warm vintage palette for care theme – earthy, terracotta tones */
+      --clr-bg: #0f172a;
+      --clr-bg-gradient-start: rgba(60,30,20,.45);
+      --clr-bg-gradient-end: rgba(90,45,35,.30);
+      --clr-primary: #c85a4a;
+      --clr-primary-hover: #a84a3a;
+      --clr-primary-shadow: rgba(200,90,74,.50);
+      --clr-primary-rgb: 200,90,74;
+      --clr-secondary: #e89b6f;
+      --clr-secondary-rgb: 232,155,111;
+      --clr-accent: #d4a574;
+      --clr-text-light: #ffffff;
+      --clr-text-secondary: #d1c9bf;
+      --clr-muted: #8b7f77;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(135deg, var(--clr-bg-gradient-start) 0%, var(--clr-bg-gradient-end) 100%),
+        url('static/images/microscopio.jpg') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      z-index: 0;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: var(--clr-secondary);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .35rem .9rem;
+      border-radius: 99px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      color: #fff;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      max-width: 700px;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      color: rgba(255,255,255,.72);
+      font-size: clamp(.95rem, 2vw, 1.125rem);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .btn-open {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      background: var(--clr-primary);
+      color: var(--clr-text-light);
+      border: none;
+      padding: .85rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 20px var(--clr-primary-shadow);
+    }
+    .btn-open:hover { background: var(--clr-primary-hover); transform: translateY(-2px); box-shadow: 0 8px 28px var(--clr-primary-shadow); }
+    .btn-open:active { transform: translateY(0); }
+
+
+    /* ── Offcanvas ── */
+    .offcanvas {
+      width: min(480px, 95vw) !important;
+      background: #0f172a;
+      border-left: 1px solid rgba(255,255,255,.08);
+    }
+    .offcanvas-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .offcanvas-title {
+      color: var(--clr-text-light);
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .offcanvas-body {
+      padding: 1.25rem 1.25rem;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.15) transparent;
+    }
+    .btn-close-custom {
+      background: rgba(255,255,255,.08);
+      border: none;
+      color: var(--clr-text-secondary);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .btn-close-custom:hover { background: rgba(255,255,255,.16); color: var(--clr-text-light); }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; margin-bottom: 1rem; }
+    .search-wrap i {
+      position: absolute;
+      left: .85rem; top: 50%;
+      transform: translateY(-50%);
+      color: var(--clr-muted); font-size: .95rem;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      color: var(--clr-text-secondary);
+      padding: .6rem .9rem .6rem 2.4rem;
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input::placeholder { color: var(--clr-muted); }
+    .search-input:focus { border-color: var(--clr-primary); }
+
+    /* ── Filter chips ── */
+    .filter-chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .chip {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--clr-muted);
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+      padding: .3rem .75rem;
+      border-radius: 99px;
+      cursor: pointer; transition: all .2s; user-select: none;
+    }
+    .chip.active, .chip:hover { background: var(--clr-primary-hover); border-color: var(--clr-primary); color: var(--clr-text-light); }
+
+    /* ── Project cards ── */
+    .project-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 14px;
+      padding: 1.1rem 1.15rem;
+      margin-bottom: .85rem;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .15s;
+      position: relative; overflow: hidden;
+    }
+    .project-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(var(--clr-primary-rgb),.02), rgba(var(--clr-secondary-rgb),.01));
+      transition: opacity .3s; opacity: 0; pointer-events: none;
+    }
+    .project-card:hover { background: rgba(255,255,255,.09); border-color: rgba(var(--clr-primary-rgb),.45); transform: translateX(-3px); }
+    .project-card:hover::before { opacity: 1; }
+
+    .card-top { display: flex; align-items: flex-start; gap: .85rem; margin-bottom: .7rem; }
+    .card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .card-title { color: var(--clr-text-light); font-weight: 600; font-size: .9rem; line-height: 1.4; margin: 0 0 .3rem; }
+    .card-status {
+      font-size: .7rem; font-weight: 600;
+      padding: .15rem .55rem; border-radius: 99px;
+      display: inline-block; letter-spacing: .03em;
+    }
+    .status-completed { background: rgba(34,197,94,.15); color: #4ade80; }
+    .status-ongoing   { background: rgba(212,165,116,.15); color: #d4a574; }
+
+    .card-excerpt {
+      color: var(--clr-text-secondary); font-size: .8rem; line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: .75rem;
+    }
+    .card-footer-row { display: flex; align-items: center; justify-content: space-between; }
+    .card-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .tag { font-size: .68rem; font-weight: 600; letter-spacing: .03em; padding: .2rem .55rem; border-radius: 99px; }
+    .card-arrow { color: var(--clr-muted); font-size: .85rem; transition: color .2s, transform .2s; }
+    .project-card:hover .card-arrow { color: var(--clr-primary); transform: translateX(3px); }
+
+    /* ── Acknowledgements ── */
+    .ack-section {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .ack-label {
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--clr-primary); margin-bottom: .6rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .ack-text { font-size: .8rem; line-height: 1.75; color: var(--clr-muted); }
+
+    /* ── Modal ── */
+    .modal-content {
+      background: var(--clr-bg);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 18px; color: var(--clr-text-secondary);
+    }
+    .modal-header {
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 1.5rem 1.75rem 1.1rem;
+      align-items: flex-start; gap: 1rem;
+    }
+    .modal-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .modal-title  { font-weight: 700; font-size: 1.1rem; color: var(--clr-text-light); line-height: 1.4; }
+    .modal-subtitle { color: var(--clr-muted); font-size: .8rem; margin-top: .3rem; }
+    .modal-body   { padding: 1.5rem 1.75rem; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.12) transparent; }
+
+    .section-label {
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--clr-primary); margin-bottom: .6rem;
+    }
+    .abstract-text {
+      font-size: .875rem; line-height: 1.75; color: var(--clr-text-secondary);
+      background: rgba(255,255,255,.04);
+      border-left: 3px solid var(--clr-primary);
+      padding: .9rem 1rem; border-radius: 0 10px 10px 0;
+      margin-bottom: 1.5rem;
+    }
+    .affiliation-item {
+      display: flex; align-items: center; gap: .65rem;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; padding: .7rem 1rem;
+      margin-bottom: .6rem; font-size: .85rem; color: #cbd5e1;
+    }
+    .affiliation-item i { color: var(--clr-primary); font-size: 1rem; }
+
+    /* ── Publication & resource links ── */
+    .resource-block { margin-bottom: .65rem; }
+    .resource-link {
+      display: flex; align-items: center; gap: .75rem;
+      background: rgba(var(--clr-primary-rgb),.08);
+      border: 1px solid rgba(var(--clr-primary-rgb),.2);
+      border-radius: 10px 10px 0 0; padding: .8rem 1rem;
+      font-size: .85rem;
+      color: var(--clr-text-secondary); text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .resource-block:not(:has(.pub-authors-row)) .resource-link { border-radius: 10px; }
+    .resource-link:hover { background: rgba(var(--clr-primary-rgb),.16); border-color: rgba(var(--clr-primary-rgb),.4); color: var(--clr-text-light); }
+    .resource-link .res-icon { font-size: 1.05rem; flex-shrink: 0; }
+    .resource-link .res-label { flex-grow: 1; }
+    .resource-link .res-ext { color: var(--clr-muted); font-size: .8rem; flex-shrink: 0; }
+    .resource-link:hover .res-ext { color: var(--clr-primary); }
+    .pub-authors-row {
+      display: flex; align-items: center; gap: .35rem;
+      background: rgba(var(--clr-primary-rgb),.04);
+      border: 1px solid rgba(var(--clr-primary-rgb),.2); border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: .4rem 1rem .5rem;
+      font-size: .75rem; color: var(--clr-muted);
+    }
+    .pub-authors-row i { color: var(--clr-muted); flex-shrink: 0; }
+
+    /* ── Extra links ── */
+    .extra-link {
+      display: flex; align-items: center; gap: .75rem;
+      background: rgba(var(--clr-secondary-rgb),.08);
+      border: 1px solid rgba(var(--clr-secondary-rgb),.2);
+      border-radius: 10px; padding: .8rem 1rem;
+      margin-bottom: .5rem; font-size: .85rem;
+      color: #c4b5fd; text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .extra-link:hover { background: rgba(var(--clr-secondary-rgb),.16); border-color: rgba(var(--clr-secondary-rgb),.4); color: #ddd6fe; }
+    .extra-link i { font-size: 1rem; flex-shrink: 0; }
+
+    .modal-footer { border-top: 1px solid rgba(255,255,255,.08); padding: 1rem 1.75rem; gap: .75rem; }
+    .btn-modal-secondary {
+      background: rgba(255,255,255,.06); color: var(--clr-text-secondary);
+      border: 1px solid rgba(255,255,255,.1);
+      padding: .6rem 1.25rem; border-radius: 10px;
+      font-size: .875rem; font-weight: 500;
+      display: inline-flex; align-items: center; gap: .4rem;
+      transition: background .2s, color .2s; cursor: pointer;
+    }
+    .btn-modal-secondary:hover { background: rgba(255,255,255,.1); color: var(--clr-text-light); }
+
+    .no-results { text-align: center; color: var(--clr-muted); padding: 2.5rem 1rem; font-size: .875rem; }
+    .no-results i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+    .empty-body  { text-align: center; color: var(--clr-muted); padding: 2rem 0; font-size: .875rem; font-style: italic; }
+    /* small muted copyright badge */
+    .site-copyright {
+      position: fixed;
+      left: 1rem;
+      bottom: .6rem;
+      color: var(--clr-muted);
+      font-size: .75rem;
+      opacity: .95;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     HERO
+══════════════════════════════ -->
+<section class="hero">
+
+  <h1>Sense of Care<br>for Cultural Heritage</h1>
+  <p>Browse publications, tools and digital resources that brings cultural heritage closer to the public.</p>
+  <button class="btn-open" data-bs-toggle="offcanvas" data-bs-target="#projectsOffcanvas">
+    Browse Projects
+    <i class="bi bi-arrow-right"></i>
+  </button>
+</section>
+
+<!-- ══════════════════════════════
+     OFFCANVAS
+══════════════════════════════ -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="projectsOffcanvas">
+  <div class="offcanvas-header">
+    <div>
+      <h5 class="offcanvas-title">Projects</h5>
+      <p class="text-secondary mb-0" style="font-size:.78rem;">Click on a project for details</p>
+    </div>
+    <!--button class="btn-close-custom" data-bs-dismiss="offcanvas">
+      <i class="bi bi-x-lg"></i>
+    </button-->
+  </div>
+
+  <div class="offcanvas-body">
+    <!-- Search -->
+    <div class="search-wrap">
+      <i class="bi bi-search"></i>
+      <input class="search-input" type="text" id="searchInput" placeholder="Search projects..." />
+    </div>
+
+    <!-- Filter chips -->
+    <div class="filter-chips">
+      <span class="chip active" data-filter="all">All</span>
+      <span class="chip" data-filter="THEORY">Theory</span>
+      <span class="chip" data-filter="UX DESIGN">UX Design</span>
+      <span class="chip" data-filter="EVALUATION">Evaluation</span>
+      <span class="chip" data-filter="TOOLS">Tools</span>
+    </div>
+
+    <!-- Cards list (populated by JS) -->
+    <div id="cardsList"></div>
+
+    <!-- ══════════════════════════════════════════════════════
+         ACKNOWLEDGEMENTS — edit the text below
+    ══════════════════════════════════════════════════════ -->
+    <div class="ack-section">
+      <p class="ack-label"><i class="bi bi-award"></i>Acknowledgements</p>
+      <p class="ack-text">
+        This research was supported by the projects <a href="https://www.h2iosc.cnr.it/">H2IOSC</a>, <a href="https://perceive-horizon.eu/c">PERCEIVE</a>, <a href="https://www.fondazionechanges.org/">CHANGES</a> and received partial funding through the <a href="https://www.sbfi.admin.ch/en/swiss-government-excellence-scholarships">Swiss Government Excellence Scholarship</a> (2025.0089).<br>
+        <em>Credits: <a href="https://phd.uniroma1.it/web/MANUELE-VEGGI_nP2125144_IT.aspx">Manuele Veggi</a> (PhD Candidate in "Heritage Science" at Sapienza University of Rome and Doctoral Researcher at CNR ISPC, Florence)</em>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     MODAL
+══════════════════════════════ -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="d-flex align-items-start gap-3 w-100">
+          <div class="modal-icon-wrap" id="modalIcon"></div>
+          <div class="flex-grow-1">
+            <h5 class="modal-title" id="modalTitle"></h5>
+            <p class="modal-subtitle mb-0" id="modalSubtitle"></p>
+          </div>
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer justify-content-between">
+        <div id="modalFooterLeft"></div>
+        <div class="d-flex gap-2" id="modalFooterRight"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+/* ══════════════════════════════════════════════════════════════
+   RESOURCE TYPE → ICON MAPPING
+   Use these "type" values on each item in publications[] / links[]
+   ──────────────────────────────────────────────────────────────
+   "paper"    → journal article        (bi-journal-text)
+   "chapter"  → book chapter           (bi-book)
+   "book"     → full book              (bi-book-fill)
+   "dataset"  → dataset / data file    (bi-database)
+   "code"     → code / software repo   (bi-code-square)
+   "video"    → video / talk           (bi-play-circle)
+   "poster"   → poster / infographic   (bi-image)
+   "report"   → technical report       (bi-file-earmark-text)
+   "link"     → generic URL            (bi-link-45deg)
+══════════════════════════════════════════════════════════════ */
+const RESOURCE_ICONS = {
+  paper:   'bi-journal-text',
+  chapter: 'bi-book',
+  book:    'bi-book-fill',
+  dataset: 'bi-database',
+  code:    'bi-code-square',
+  video:   'bi-play-circle',
+  poster:  'bi-image',
+  report:  'bi-file-earmark-text',
+  link:    'bi-link-45deg',
+};
+function resIcon(type) { return RESOURCE_ICONS[type] || 'bi-journal-text'; }
+
+/* ══════════════════════════════════════════════════════════════
+   TAG COLOUR PALETTE  (used automatically — no need to edit)
+══════════════════════════════════════════════════════════════ */
+const TAG_STYLES = {
+  'THEORY':     { color: '#e89b6f', bg: 'rgba(232,155,111,.18)'  },
+  'UX DESIGN':  { color: '#c85a4a', bg: 'rgba(200,90,74,.18)'  },
+  'EVALUATION': { color: '#d4a574', bg: 'rgba(212,165,116,.18)'  },
+  'TOOLS':      { color: '#b5835a', bg: 'rgba(181,131,90,.18)'  },
+};
+function makeTags(labels) {
+  return labels.map(l => ({ label: l, color: TAG_STYLES[l].color, bg: TAG_STYLES[l].bg }));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ██████████████████  PROJECT DATA  ██████████████████████████
+
+   HOW TO EDIT A PROJECT
+   ─────────────────────
+   Each project object has these fields:
+
+   title        → display name (string)
+   status       → "Completed" | "Ongoing"
+   tags         → makeTags(["THEORY","UX DESIGN","EVALUATION","TOOLS"])
+                  (pick one or more from the four above)
+   excerpt      → one-line description shown on the card
+   abstract     → longer text shown in the modal (leave "" to hide)
+   affiliations → [] or list of strings  ← shared across the whole project
+
+   publications → list of resources shown under "Publications & Resources"
+                  Each item: { label, url, type, authors }
+                  · "type"    controls the icon — see the RESOURCE TYPE table above
+                  · "authors" is an optional array of name strings, shown below
+                    the link. Leave [] or omit to hide.
+                  Example:
+                  { label: "Title", url: "https://...", type: "paper",
+                    authors: ["A. Smith", "B. Jones"] }
+
+   links        → additional links shown under "Useful Links"
+                  Each item: { label, url }
+
+══════════════════════════════════════════════════════════════ */
+const projects = [
+
+  {
+    id: 1,
+    icon: "bi bi-book", iconBg: "rgba(200,90,74,.18)", iconColor: "#c85a4a",
+    title: "Care Theories in Philosophy, Curatorship and Interactive Media",
+    status: "Completed",
+    tags: makeTags(["THEORY"]),
+    excerpt: "An interdisciplinary review on how we can interpret care for cultural heritage",
+    abstract: "We provide a survey on care theories across philosophy, curatorship, and interactive media to establish a cross-disciplinary state of the art for designing heritage experiences. Drawing on ethico-philosophical sources, from Heidegger and Gilligan to Tronto and Groys, we traces the concept of care from existential and relational frameworks to curatorial practice. The analysis extends to art and multimedia applications, examining how visual, emotional, and interactive engagement strategies have historically evoked caring attitudes in audiences.",
+    affiliations: ["CNR - ISPC, Florence (Italy)"],
+    publications: [
+      {label: "Sense of Care in the Design of Digital Heritage Applications", url: "https://doi.org/10.1007/978-3-032-07792-9_4", type: "chapter", authors: ["M. Veggi", "V. Bonanno", "I. Cerato", "I.-M. Ciortan", "A. Clay", "G. Fiorenza", "D. S. Martinez Pandiani", "S. Pescarin"]}
+    ]
+  },
+
+    {
+    id: 2,
+    icon: "bi-people-fill", iconBg: "rgba(200,90,74,.18)", iconColor: "#c85a4a",
+    title: "MyTISSE. A Proof of Concept on Creativity and Care",
+    status: "Completed",
+    tags: makeTags(["UX DESIGN"]),
+    excerpt: "A proof of concept on care, colour change and creative engagement on a canvas by Matisse",
+    abstract: "This study presents an experimental protocol for evaluating whether artistic engagement can elicit a caring attitude toward art collections threatened by colour change. Within the PERCEIVE project framework, care is understood as relational process and can be triggered by curiosity-driven “hooks” that bridge a knowledge gap between visitor and artwork. Using Matisse's “Bathers by a River” as a case study, a qualitative evaluation of a proof-of-concept for a caring prototype explores how interactive artistic engagement can function as a participatory strategy toward conservation data. Results demonstrate the potential of this approach for fostering visitor care.",
+    affiliations: ["CNR - ISPC, Florence (Italy)"],
+    publications: [
+      { label: "Creative engagement and meaning creation: A first experimental protocol on interactive cultural experiences for conservation data", url: "https://doi.org/10.1016/j.daach.2024.e00321", type: "paper",  authors: ["M. Veggi", "S. Pescarin"] }
+    ],
+    links: [{label: "MyTisse Reference GitHub Repository", url: "https://github.com/ManueleVeggi/mytisse"}]
+  },
+
+  {
+    id: 3,
+    icon: "bi bi-puzzle", iconBg: "rgba(200,90,74,.18)", iconColor: "#c85a4a",
+    title: "A Design Framework on Caring for Cultural Heritage",
+    status: "Completed",
+    tags: makeTags(["THEORY", "UX DESIGN"]),
+    excerpt: "Design framework for the design of interactive experiences aimed at visitors' elicitng sense of care.",
+    abstract: "We present a care theory and design framework for interactive media applied to coloured cultural heritage collections. Drawing on a Cultural Probe Kit to analyse caring behaviours, the framework articulates emotional and empathetic dimensions of visitor engagement, emphasising meaningful connections between caregivers and cultural heritage fostered through storytelling and interactive technologies. The proposed framework identifies key triggers that prompt caring attitudes, positioning museums as social spaces where participation enhances meaning-making and deepens relational bonds with collections.",
+    affiliations: ["CNR - ISPC, Florence (Italy)"],
+    publications: [
+      {label: "Sense of Care in the Design of Digital Heritage Applications", url: "https://doi.org/10.1007/978-3-032-07792-9_4", type: "chapter", authors: ["M. Veggi", "V. Bonanno", "I. Cerato", "I.-M. Ciortan", "A. Clay", "G. Fiorenza", "D. S. Martinez Pandiani", "S. Pescarin"]}
+    ],
+    links: []
+  },
+
+  {
+    id: 4,
+    icon: "bi-people-fill", iconBg: "rgba(232,155,111,.18)", iconColor: "#e89b6f",
+    title: "Echoes of Loss / Design & Set-up of a Caring Prototype",
+    status: "Completed",
+    tags: makeTags(["UX DESIGN"]),
+    excerpt: "A concept-oriented design of a caring prototype on the Temple of Isis in Pompeii",
+    abstract: "Echoes of Loss is a museum installation developed within the Horizon Europe PERCEIVE project to engage visitors with the lost polychromy of ancient statuary. Grounded in a care theory built on three concepts (care practice, care as a process, and effort) the design draws on qualitative user research revealing that audiences engage most deeply when actively involved in investigative processes rather than passive reconstruction viewing. The result is a modular interactive experience guiding visitors through step-by-step polychromy reconstruction, integrating archaeological, literary, and scientific data.",
+    affiliations: ["CNR - ISPC, Florence (Italy)", "MANN, National Archaeological Museum, Naples (Italy)"],
+    publications: [
+      { label: "Implementing Curiosity Hooks and Caring Practices in the Reconstruction of Lost Polychromy: Design Prototypes for Interactive Experiences", url: "https://doi.org/10.2312/dh.20253108", type: "paper", authors: ["F. Bonifazi", "M. Veggi", "M. Massidda", "D. Ferdani", "S. Pescarin"]},
+      { label: "Design Resources to Enhance Access to Coloured Collections Through Interactive Experiences", url: "https://doi.org/10.1007/978-3-032-17700-1_3", type: "chapter", authors: ["M. Massidda", "B. Aga", "C. Barandoni", "F. Bonifazi", "I. Cerato", "A. Clay", "E D’Annibale", "B. Fanini", "D. Ferdani", "M. Giacco", "R. Iannaccone", "D. Magrini", "C. Martucci", "N. Olsson", "I. Sandu", "S. Spotti", "L. Travaglini", "G. Trumpy", "S. Pescarin", "M. Veggi"]},
+    ],
+    links: [
+      {label: "Caring prototype presentation on PERCEIVE website", url: "https://perceive-horizon.eu/index.php/results/perceive-isis-colours/perceive-prototype-echoes-of-loss/"}]
+  },
+
+  {
+    id: 5,
+    icon: "bi bi-graph-up", iconBg: "rgba(232,155,111,.18)", iconColor: "#e89b6f",
+    title: "Echoes of Loss / Assessment and Impact of a Caring Prototype",
+    status: "Ongoing",
+    tags: makeTags(["UX DESIGN", "EVALUATION"]),
+    excerpt: "Evaluation of the Echoes of Loss interactive installation.",
+    abstract: "This study evaluates whether persuasive technologies can foster visitor care for cultural heritage. Through three distinct experimental settings, it validates the PERCEIVE Care Framework using Echoes of Loss — an interactive prototype developed within the Horizon Europe PERCEIVE project. The experience addresses lost polychromy in Graeco-Roman statues, using the Temple of Isis in Pompeii as a case study. Findings contribute practical design principles for curators and designers seeking to create meaningful, care-oriented digital heritage experiences.",
+    affiliations: ["CNR - ISPC, Florence (Italy)", "MANN, National Archaeological Museum, Naples (Italy)", "Dep. of Psychology, “La Sapienza” University of Rome (Italy)", "Dep. of Psychology, “Alma Mater Studiorum” University of Bologna (Italy)"],
+    publications: [
+      { label: "Design Resources to Enhance Access to Coloured Collections Through Interactive Experiences", url: "https://doi.org/10.1007/978-3-032-17700-1_3", type: "chapter", authors: ["M. Massidda", "B. Aga", "C. Barandoni", "F. Bonifazi", "I. Cerato", "A. Clay", "E. D’Annibale", "B. Fanini", "D. Ferdani", "M. Giacco", "R. Iannaccone", "D. Magrini", "C. Martucci", "N. Olsson", "I. Sandu", "S. Spotti", "L. Travaglini", "G. Trumpy", "S. Pescarin", "M. Veggi"]}
+    ],
+    links: [
+      {label: "Data Analysis Walkthrough (Single UX Modules)", url: "echoes-of-loss/modules.html"},
+      {label: "Data Analysis Walkthrough (Impact on Caring Intentions)", url: "echoes-of-loss/impact_assessment.html"}
+    ]
+  },
+
+  {
+    id: 6,
+    icon: "bi-clipboard-data-fill", iconBg: "rgba(181,131,90,.18)", iconColor: "#b5835a",
+    title: "CHARE. A Rasch Scale to Assess Care for Cultural Heritage",
+    status: "Completed",
+    tags: makeTags(["EVALUATION", "TOOLS"]),
+    excerpt: "Development and psychometric validation of a measurement scale for the sense of care based on the Rasch model.",
+    abstract: " Research in museum studies, heritage science, and cultural tourism highlights the “care theory” as a key framework for understanding the relationship between citizens and cultural heritage. Assessing the “sense of care” toward cultural objects and sites can provide valuable insights for museums, education, and public policy. However, visitor studies lack suitable assessment tools. This study fills the gap by introducing the Scale for the Assessment of Caring for Cultural Heritage (CHARE), developed using the Rasch model. A preliminary 16-item questionnaire on visitors’ “caring behaviours” was designed through a literature review and expert focus groups, then tested on young adults: statistical analysis confirms the model’s reliability. While the study serves as a starting point for future research and further validation is needed, CHARE already offers a practical tool for museum practitioners to assess young visitors’ engagement and caring attitudes toward cultural heritage.",
+    affiliations: ["CNR - ISPC, Florence (Italy)", "Dep. of Psychology, “La Sapienza” University of Rome (Italy)", "Dep. of Psychology, “Alma Mater Studiorum” University of Bologna (Italy)"],
+    publications: [
+      {label: "How Much Do We Care About Cultural Heritage? A Rasch Scale Validation Study Among Young Adults", url: "https://doi.org/10.3390/heritage8080317", type: "paper", authors: ["M. Veggi", "A. Von Gal", "L. Piccardi", "S. Pescarin", "R. Nori"]}
+    ],
+    links: [{label: "Validation Data and Walkthrough", url: "https://doi.org/10.5281/zenodo.14267774"}]
+  },
+
+  {
+    id: 7,
+    icon: "bi-tools", iconBg: "rgba(181,131,90,.18)", iconColor: "#b5835a",
+    title: "Sense of Care Integration in the CoDesign Tool",
+    status: "Completed",
+    tags: makeTags(["UX DESIGN", "TOOLS"]),
+    excerpt: "Co-design tool for integrating the sense of care into interactive digital experiences.",
+    abstract: "The CoDesign Tool, developed within the Horizon Europe PERCEIVE project, offers a structured, game-like framework supporting collaborative ideation for cultural heritage experiences. Building on the VisitorBox toolkit (EU project GIFT), it introduces dedicated cognitive-emotional cards targeting “sense of care” as core audience goals. This extension extends the concept of care beyond institutional conservation toward active visitor engagement. Evaluated through co-design workshops, the tool demonstrated reduced cognitive load and more balanced participation across disciplines. Its modular, card-based format bridges expertise gaps among practitioners, making care-oriented design accessible regardless of prior design experience.",
+    affiliations: ["CNR - ISPC, Florence (Italy)", "Fraunhofer IGD (Germany)"],
+    publications: [
+      {label: "The CoDesign Tool. A Card-Based Framework for Interactive and Collaborative Design in Cultural Heritage", url: "https://doi.org/10.1007/978-3-032-13164-5_18", type: "paper", authors: ["L. Travaglini", "M. Massidda", "A. Zapf", "S. Spotti", "M. Veggi", "S. Pescarin"]}
+    ],
+    links: [
+      {label: "PERCEIVE Co-Design Tool for Cultural Heritage Experiences", url: "https://doi.org/10.5281/zenodo.10986214"},
+    {label: "CoDesign Tool presentation on PERCEIVE website", url: "https://perceive-horizon.eu/index.php/results/perceive-tools/co-design-tools/"}]
+  },
+
+  {
+    id: 8,
+    icon: "bi bi-headset-vr", iconBg: "rgba(181,131,90,.18)", iconColor: "#b5835a",
+    title: "checK. An Evaluation Platform for Immersive Heritage Experience",
+    status: "Ongoing",
+    tags: makeTags(["EVALUATION", "TOOLS"]),
+    excerpt: "Evaluation framework for interactive experiences in cultural and care contexts.",
+    abstract: "checK (Cultural Heritage Experiment Configuration Kit) is a web-based platform enabling heritage practitioners and behavioural scientists to configure experiments, conduct experimental sessions, and visualise collected data in digital heritage environments — without requiring programming expertise. Building on lessons learned from a previous Experiment Planner tool, the platform addresses key usability challenges through redesigned interfaces that reduce cognitive load, privilege linear user flow, and improve overall accessibility and flexibility.",
+    affiliations: ["CNR - ISPC, Florence (Italy)", "Laboratory for Experimental Museology, EPFL eM+, Lausanne (Switzerland)", "Dep. of Psychology, “La Sapienza” University of Rome (Italy)", "Dep. of Psychology, “Alma Mater Studiorum” University of Bologna (Italy)"],
+    publications: [
+      { label: "Towards an Experiment Planner for Cognitive Studies in Virtual Heritage Environments. A Pilot Study", url: "https://doi.org/10.1007/978-3-032-17700-1_3", type: "chapter", authors: ["M. Massidda", "A. Bordignon", "F. Fabbri", "R. Nori", "L. Piccardi", "L. Travaglini", "M. Veggi", "S. Pescarin"]},{ label: "Design Resources to Enhance Access to Coloured Collections Through Interactive Experiences", url: "https://doi.org/10.2312/gch.20241261", type: "paper", authors: ["M. Massidda", "B. Aga", "C. Barandoni", "F. Bonifazi", "I. Cerato", "A. Clay", "E. D’Annibale", "B. Fanini", "D. Ferdani", "M. Giacco", "R. Iannaccone", "D. Magrini", "C. Martucci", "N. Olsson", "I. Sandu", "S. Spotti", "L. Travaglini", "G. Trumpy", "S. Pescarin", "M. Veggi"]}
+    ],
+    links: [{label: "checK Reference GitHub Repository", url: "https://github.com/cnr-ispc-dhilab-fi/checK"},
+    {label: "checK (Experiment Planner) presentation on PERCEIVE website", url: "https://perceive-horizon.eu/index.php/results/perceive-tools/codesign-tool-experiment-planner/"}]
+  }
+
+];
+/* ══════════════════════════════════════════════════════════════
+   END OF PROJECT DATA
+══════════════════════════════════════════════════════════════ */
+
+
+/* ── Render cards ─────────────────────────────────────────── */
+function renderCards(list) {
+  const container = document.getElementById('cardsList');
+  if (list.length === 0) {
+    container.innerHTML = `<div class="no-results"><i class="bi bi-search"></i>No projects found.</div>`;
+    return;
+  }
+  container.innerHTML = list.map(p => `
+    <div class="project-card" onclick="openModal(${p.id})">
+      <div class="card-top">
+        <div class="card-icon" style="background:${p.iconBg};">
+          <i class="bi ${p.icon}" style="color:${p.iconColor};"></i>
+        </div>
+        <div class="flex-grow-1">
+          <p class="card-title">${p.title}</p>
+          <span class="card-status ${p.status === 'Completed' ? 'status-completed' : 'status-ongoing'}">${p.status}</span>
+        </div>
+      </div>
+      <p class="card-excerpt">${p.excerpt}</p>
+      <div class="card-footer-row">
+        <div class="card-tags">
+          ${p.tags.map(t => `<span class="tag" style="background:${t.bg};color:${t.color};">${t.label}</span>`).join('')}
+        </div>
+        <i class="bi bi-arrow-right card-arrow"></i>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Filter + search ──────────────────────────────────────── */
+let activeFilter = 'all';
+let searchQuery  = '';
+
+function applyFilters() {
+  let list = projects;
+  if (activeFilter !== 'all')
+    list = list.filter(p => p.tags.some(t => t.label === activeFilter));
+  if (searchQuery)
+    list = list.filter(p =>
+      p.title.toLowerCase().includes(searchQuery) ||
+      p.excerpt.toLowerCase().includes(searchQuery)
+    );
+  renderCards(list);
+}
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.filter;
+    applyFilters();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase().trim();
+  applyFilters();
+});
+
+/* ── Open modal ───────────────────────────────────────────── */
+function openModal(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+
+  const isOngoing = p.status === 'Ongoing';
+
+  document.getElementById('modalIcon').style.background = p.iconBg;
+  document.getElementById('modalIcon').innerHTML =
+    `<i class="bi ${p.icon}" style="color:${p.iconColor};font-size:1.4rem;"></i>`;
+
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalSubtitle').innerHTML =
+    `<span style="color:${isOngoing ? '#d4a574' : '#4ade80'};">
+       <i class="bi bi-circle-fill me-1" style="font-size:.45rem;vertical-align:middle;"></i>${p.status}
+     </span>`;
+
+  let body = '';
+
+  if (p.abstract) {
+    body += `
+      <p class="section-label"><i class="bi bi-file-text me-1"></i>Abstract</p>
+      <div class="abstract-text">${p.abstract}</div>`;
+  }
+
+  if (p.affiliations && p.affiliations.length > 0) {
+    body += `
+      <p class="section-label"><i class="bi bi-building me-1"></i>Affiliations</p>
+      ${p.affiliations.map(af => `
+        <div class="affiliation-item"><i class="bi bi-geo-alt-fill"></i>${af}</div>`).join('')}`;
+  }
+
+  if (p.publications && p.publications.length > 0) {
+    body += `
+      <p class="section-label mt-3"><i class="bi bi-journals me-1"></i>Publications &amp; Resources</p>
+      ${p.publications.map(r => `
+        <div class="resource-block">
+          <a class="resource-link" href="${r.url}" target="_blank" rel="noopener">
+            <i class="bi ${resIcon(r.type)} res-icon"></i>
+            <span class="res-label">${r.label}</span>
+            <i class="bi bi-box-arrow-up-right res-ext"></i>
+          </a>
+          ${r.authors && r.authors.length > 0 ? `
+            <div class="pub-authors-row">
+              <i class="bi bi-people"></i>${r.authors.join(', ')}
+            </div>` : ''}
+        </div>`).join('')}`;
+  }
+
+  if (p.links && p.links.length > 0) {
+    body += `
+      <p class="section-label mt-3"><i class="bi bi-link-45deg me-1"></i>Useful Links</p>
+      ${p.links.map(lnk => `
+        <a class="extra-link" href="${lnk.url}" target="_blank" rel="noopener">
+          <i class="bi bi-arrow-right-circle"></i>
+          ${lnk.label}
+        </a>`).join('')}`;
+  }
+
+  if (!body) {
+    body = `<p class="empty-body">Content coming soon.</p>`;
+  }
+
+  document.getElementById('modalBody').innerHTML = body;
+
+  document.getElementById('modalFooterLeft').innerHTML =
+    p.tags.map(t => `<span class="tag me-1" style="background:${t.bg};color:${t.color};">${t.label}</span>`).join('');
+
+  document.getElementById('modalFooterRight').innerHTML = `
+    <button class="btn-modal-secondary" data-bs-dismiss="modal">
+      <i class="bi bi-x"></i> Close
+    </button>`;
+
+  const oc = bootstrap.Offcanvas.getInstance(document.getElementById('projectsOffcanvas'));
+  if (oc) oc.hide();
+  setTimeout(() => new bootstrap.Modal(document.getElementById('projectModal')).show(), 300);
+}
+
+/* ── Init ─────────────────────────────────────────────────── */
+renderCards(projects);
+
+// Auto-open modal when ?id={projectId} is present in the URL
+(function() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const idParam = params.get('id');
+    if (!idParam) return;
+    const id = parseInt(idParam, 10);
+    if (Number.isNaN(id)) return;
+    // delay so page and Bootstrap components initialize
+    setTimeout(() => openModal(id), 120);
+  } catch (e) {
+    // noop
+  }
+})();
+
+// When modal is closed, re-open the projects offcanvas
+(function() {
+  const modalEl = document.getElementById('projectModal');
+  if (!modalEl) return;
+  modalEl.addEventListener('hidden.bs.modal', () => {
+    const ocEl = document.getElementById('projectsOffcanvas');
+    if (!ocEl) return;
+    const oc = bootstrap.Offcanvas.getInstance(ocEl) || new bootstrap.Offcanvas(ocEl);
+    oc.show();
+  });
+})();
+</script>
+  <div class="site-copyright">© CNR ISPC</div>
+</body>
+</html>
