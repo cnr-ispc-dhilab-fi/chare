@@ -1,6 +1,6 @@
 # =========================
 # CARE CITATIONS PIPELINE
-# Scopus (CSV) + WoS (Excel .xls/.xlsx) -> dedup by DOI -> plots
+# Scopus (CSV) + WoS (Excel .xls/.xlsx) -> dedup by DOI -> exclude off-topic papers -> plots
 # =========================
 
 library(readr)
@@ -30,7 +30,7 @@ current_year <- 2025
 # -------------------------
 # 1) Load Scopus (CSV)
 # -------------------------
-scopus_df <- read_csv("scopus.csv", col_types = cols(.default = col_character()))
+scopus_df <- read_csv("source/scopus.csv", col_types = cols(.default = col_character()))
 
 scopus_min <- scopus_df %>%
   transmute(
@@ -44,7 +44,7 @@ scopus_min <- scopus_df %>%
 # -------------------------
 # 2) Load WoS (Excel)
 # -------------------------
-wos_df <- read_excel("wos.xls", col_types = "text")  # works also for .xlsx if you change filename
+wos_df <- read_excel("source/wos.xls", col_types = "text")  # works also for .xlsx if you change filename
 
 # If your WoS column names differ slightly, run: names(wos_df)
 wos_min <- wos_df %>%
@@ -80,6 +80,27 @@ care_cit <- union_df %>%
   select(article_id, year, citations_total, cited_scopus, cited_wos_core, cited_wos_all, sources)
 
 # -------------------------
+# 3b) EXCLUDE off-topic papers (the 148 removed during screening)
+# -------------------------
+# filtered/excluded_dois.csv contains one column "doi" with the normalised DOIs of the
+# 148 records dropped because they don't belong to the cultural-heritage domain
+# (see articles-ssh_excluded.csv). We remove them here so that every downstream
+# plot (P0-P3) reflects only the validated corpus (n = 2,986).
+excluded_df <- read_csv("filtered/excluded_dois.csv", col_types = cols(doi = col_character())) %>%
+  mutate(doi = norm_doi(doi))
+
+n_before <- nrow(care_cit)
+
+care_cit <- care_cit %>%
+  anti_join(excluded_df, by = c("article_id" = "doi"))
+
+n_after <- nrow(care_cit)
+message(sprintf(
+  "Excluded %d off-topic papers by DOI (%d matched out of %d in blacklist); dataset: %d -> %d rows",
+  n_before - n_after, n_before - n_after, nrow(excluded_df), n_before, n_after
+))
+
+# -------------------------
 # 4) Basic filters + axis breaks
 # -------------------------
 care_cit2 <- care_cit %>%
@@ -111,7 +132,7 @@ p0 <- ggplot(cit_year_sum, aes(x = year, y = total_citations)) +
   labs(
     x = "Year",
     y = "Total citation count (sum)",
-    title = "Total citation count per year (≤ 2025)"
+    title = "Total citation count per year (<= 2025)"
   ) +
   theme_minimal()
 
@@ -134,7 +155,7 @@ p1 <- ggplot(cit_year_med, aes(x = year, y = median_citations)) +
   labs(
     x = "Year",
     y = "Median citation count",
-    title = "Citation count per year (median, ≤ 2025)"
+    title = "Citation count per year (median, <= 2025)"
   ) +
   theme_minimal()
 
@@ -195,15 +216,17 @@ p2b <- ggplot(cit_year_age_sum, aes(x = year)) +
   geom_line(aes(y = roll5), linewidth = 1, color = "#2F3E4E") +
   scale_x_continuous(
     breaks = seq(
-      from = min(pub_year$year, na.rm = TRUE),
-      to   = max(pub_year$year, na.rm = TRUE),
+      # FIX: the original script referenced an undefined object `pub_year`.
+      # It should use the same year range as the rest of this plot's data.
+      from = min(cit_year_age_sum$year, na.rm = TRUE),
+      to   = max(cit_year_age_sum$year, na.rm = TRUE),
       by   = 5
     )
   ) +
   labs(
     x = "Year",
     y = "Total citations per year (age-normalised)",
-    title = "Age-normalised Total Citation Rate (2020-'25)"
+    title = "Age-normalised Total Citation Rate"
   ) +
   theme_minimal()
 

@@ -7,7 +7,7 @@ library(zoo)
 
 # ---- Load data ----
 articles_ssh <- read_csv(
-  "articles-ssh.csv",
+  "filtered/articles-ssh-included.csv",
   col_types = cols(.default = col_character())
 )
 
