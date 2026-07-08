@@ -86,19 +86,20 @@ care_cit <- union_df %>%
 # 148 records dropped because they don't belong to the cultural-heritage domain
 # (see articles-ssh_excluded.csv). We remove them here so that every downstream
 # plot (P0-P3) reflects only the validated corpus (n = 2,986).
-excluded_df <- read_csv("filtered/excluded_dois.csv", col_types = cols(doi = col_character())) %>%
-  mutate(doi = norm_doi(doi))
 
-n_before <- nrow(care_cit)
+#excluded_df <- read_csv("filtered/excluded_dois.csv", col_types = cols(doi = col_character())) %>%
+#  mutate(doi = norm_doi(doi))
 
-care_cit <- care_cit %>%
-  anti_join(excluded_df, by = c("article_id" = "doi"))
+#n_before <- nrow(care_cit)
 
-n_after <- nrow(care_cit)
-message(sprintf(
-  "Excluded %d off-topic papers by DOI (%d matched out of %d in blacklist); dataset: %d -> %d rows",
-  n_before - n_after, n_before - n_after, nrow(excluded_df), n_before, n_after
-))
+#care_cit <- care_cit %>%
+#  anti_join(excluded_df, by = c("article_id" = "doi"))
+
+#n_after <- nrow(care_cit)
+#message(sprintf(
+#  "Excluded %d off-topic papers by DOI (%d matched out of %d in blacklist); dataset: %d -> %d rows",
+#  n_before - n_after, n_before - n_after, nrow(excluded_df), n_before, n_after
+#))
 
 # -------------------------
 # 4) Basic filters + axis breaks
